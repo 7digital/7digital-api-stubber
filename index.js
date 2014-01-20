@@ -53,7 +53,7 @@ function aCallTo(apiInstance, apiMethod) {
 }
 
 function listeningOn(port) {
-	return port;
+	return +port;
 }
 
 function configure(args) {
@@ -96,7 +96,6 @@ function stub() {
 				if (message.rules) {
 					++acknowledgements;
 					if (acknowledgements === config.messages.length) {
-						console.log('READY');
 						cb(killIfConnected);
 					}
 				}

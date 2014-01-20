@@ -1,10 +1,11 @@
 ### Fluent Helper For Integration Testing 7digital API client Applications
 
-**This is under development and we make no guarantees of API stability- 
-use at your own risk**
+**This is under development and there are likely to be breaking changes 
+without warning**
 
 A helper package which spins up an API stub as a child process and allows you
-to fluently configure the behaviour of the stub from with in your integration tests.
+to fluently configure the behaviour of the stub from with in your integration
+tests.
 
 ```javascript
 var stub = require('7digital-api-stubber').stub;
@@ -23,10 +24,10 @@ var release = new api.Releases();
 describe('Using the stubber', function () {
 	it('stubs endpoints', function (done) {
 		stub(
-			listeningOn(3001),
+			listeningOn(schema.port),
 			aCallTo(basket, 'get')
 				.withTheFollowingParameters({ basketId: 'blah' })
-				.respondsWithFile(fakeResponsePath),
+				.respondsWithFile('/path/to/response.xml'),
 			aCallTo(release, 'getDetails')
 				.withTheFollowingParameters({ releaseId: 12345})
 				.respondsWithErrorCode(90210)
