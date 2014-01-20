@@ -1,0 +1,33 @@
+{
+  "name": "7digital-api-stubber",
+  "version": "0.0.1",
+  "description": "Fluent test helper for stubbing out calls to the 7digital API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:7digital/7digital-api-stubber.git"
+  },
+  "keywords": [
+    "7digital",
+    "api",
+    "tests",
+    "stubs"
+  ],
+  "author": "7digital",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/7digital/7digital-api-stubber/issues"
+  },
+  "homepage": "https://github.com/7digital/7digital-api-stubber",
+  "dependencies": {
+    "7digital-api": "~0.7.0",
+    "api-stub": "git+http://github.com/7digital/api-stub"
+  },
+  "devDependencies": {
+    "chai": "~1.8.1",
+    "mocha": "~1.17.0"
+  }
+}

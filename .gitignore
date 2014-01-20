@@ -1,0 +1,9 @@
+.sass-cache
+artwork
+/node_modules/
+/iisnode/
+newrelic_agent.log
+npm-debug.log
+*.swp
+*.swo
+/coverage/
