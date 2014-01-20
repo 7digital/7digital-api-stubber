@@ -52,30 +52,51 @@ function aCallTo(apiInstance, apiMethod) {
 	};
 }
 
+function listeningOn(port) {
+	return port;
+}
+
+function configure(args) {
+	var port = args.filter(function (message) {
+		return typeof message === 'number';
+	})[0];
+	var messages = args.filter(function (message) {
+		return typeof message !== 'number';
+	});
+	port = port || 3000;
+
+	return { messages: messages, port: port };
+}
+
 function stub() {
 	var messages = [].slice.call(arguments);
 
 	return {
 		run: function (cb) {
+			var config = configure(messages);
+			var options = { env: { PORT: config.port }, silent: true };
 			var apiStub = cp.fork(path.join(__dirname, '..', 'api-stub',
-				'server.js'), [], { silent: true }),
+				'server.js'), [], options),
 				acknowledgements = 0;
+
+			function killIfConnected() {
+				if (apiStub && apiStub.connected === true) {
+					return apiStub.kill('SIGKILL');
+				}
+			}
 
 			apiStub.stderr.pipe(process.stderr);
 
 			messages.forEach(function (message) {
+				if (typeof message === 'number') return;
 				apiStub.send(message);
 			}, apiStub);
 
 			apiStub.on('message', function (message) {
-				function killIfConnected() {
-					if (apiStub && apiStub.connected === true) {
-						return apiStub.kill();
-					}
-				}
 				if (message.rules) {
 					++acknowledgements;
-					if (acknowledgements === messages.length) {
+					if (acknowledgements === config.messages.length) {
+						console.log('READY');
 						cb(killIfConnected);
 					}
 				}
@@ -86,3 +107,4 @@ function stub() {
 
 module.exports.stub = stub;
 module.exports.aCallTo = aCallTo;
+module.exports.listeningOn = listeningOn;

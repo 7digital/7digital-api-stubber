@@ -1,12 +1,14 @@
 'use strict';
 var path = require('path');
 var assert = require('chai').assert;
+var port = Math.floor(Math.random() * 16383 + 49152);
 var fakeResponsePath = path.join(__dirname, 'fake-response.xml');
 var stub = require('../').stub;
 var aCallTo = require('../').aCallTo;
+var listeningOn = require('../').listeningOn;
 var schema = require('7digital-api/assets/7digital-api-schema.json');
 schema.host = 'localhost';
-schema.port = 3000;
+schema.port = port;
 schema.version = '';
 var api = require('7digital-api').configure({
 	schema: schema
@@ -24,7 +26,9 @@ describe('stubber', function () {
 			'expected the response to match the fake response');
 	}
 
-	afterEach(killer);
+	afterEach(function () {
+		killer();
+	});
 
 	describe('aCallTo - with no parameters', function  () {
 		it('generates a responds with file rule', function () {
@@ -123,37 +127,11 @@ describe('stubber', function () {
 		});
 	});
 
-	it('stubs endpoints', function (done) {
-		stub(aCallTo(basket, 'create')
-				.respondsWithFile(fakeResponsePath)
-		).run(function (kill) {
-			killer = kill;
-			basket.create({}, function (err, faked) {
-				isFake(err, faked);
-				kill();
-				done();
-			});
-		});
-	});
-
-	it('stubs error responses', function (done) {
-		stub(aCallTo(basket, 'create')
-			.respondsWithErrorCode(90210)
-		).run(function (kill) {
-			killer = kill;
-			basket.create({}, function (fakeErr) {
-				assert(fakeErr, 'expected an error');
-				assert.equal(fakeErr.code, 90210,
-					'expected error code to match stubbed value');
-				kill();
-				done();
-			});
-		});
-	});
-
 	describe('stub', function () {
 		it('stubs endpoints', function (done) {
-			stub(aCallTo(basket, 'get')
+			stub(
+				listeningOn(port),
+				aCallTo(basket, 'get')
 					.withTheFollowingParameters({ basketId: 'blah' })
 					.respondsWithFile(fakeResponsePath),
 				aCallTo(release, 'getDetails')
