@@ -88,7 +88,6 @@ function stub() {
 			apiStub.stderr.pipe(process.stderr);
 
 			messages.forEach(function (message) {
-				if (typeof message === 'number') return;
 				apiStub.send(message);
 			}, apiStub);
 
