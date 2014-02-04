@@ -69,11 +69,11 @@ function configure(args) {
 }
 
 function stub() {
-	var messages = [].slice.call(arguments);
+	var args = [].slice.call(arguments);
 
 	return {
 		run: function (cb) {
-			var config = configure(messages);
+			var config = configure(args);
 			var options = { env: { PORT: config.port }, silent: true };
 			var apiStub = cp.fork(path.join(__dirname, '..', 'api-stub',
 				'server.js'), [], options),
@@ -87,7 +87,15 @@ function stub() {
 
 			apiStub.stderr.pipe(process.stderr);
 
-			messages.forEach(function (message) {
+			if (config.messages.length === 0) {
+				return apiStub.on('message', function (message) {
+					if (message.ready === true) {
+						return cb(killIfConnected);
+					}
+				});
+			}
+
+			config.messages.forEach(function (message) {
 				apiStub.send(message);
 			}, apiStub);
 
