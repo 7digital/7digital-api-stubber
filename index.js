@@ -2,6 +2,7 @@ var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
 var Request = require('7digital-api/lib/request');
+var stubs = [];
 
 function getApiUrl(ctx) {
 	if (ctx.params) {
@@ -68,6 +69,20 @@ function configure(args) {
 	return { messages: messages, port: port };
 }
 
+function killStub(apiStub) {
+	if (apiStub && apiStub.connected === true) {
+		return apiStub.kill('SIGKILL');
+	}
+}
+
+function killAllStubsAndDie() {
+	stubs.map(killStub);
+	process.exit(0);
+}
+
+process.once('SIGINT', killAllStubsAndDie);
+process.once('SIGTERM', killAllStubsAndDie);
+
 function stub() {
 	var args = [].slice.call(arguments);
 
@@ -78,11 +93,10 @@ function stub() {
 			var apiStub = cp.fork(path.join(__dirname, '..', 'api-stub',
 				'server.js'), [], options),
 				acknowledgements = 0;
+			stubs.push(apiStub);
 
 			function killIfConnected() {
-				if (apiStub && apiStub.connected === true) {
-					return apiStub.kill('SIGKILL');
-				}
+				killStub(apiStub);
 			}
 
 			apiStub.stderr.pipe(process.stderr);
