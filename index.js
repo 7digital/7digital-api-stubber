@@ -2,17 +2,23 @@ var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
 var Request = require('7digital-api/lib/request');
+var api = require('7digital-api');
 var stubs = [];
 
 function getApiUrl(ctx) {
+	var apiInstance = new ctx.apiInstance();
+
+	var apiClient = apiInstance.api;
+	checkIsStubClient(apiClient);
+
 	if (ctx.params) {
-		return ctx.apiInstance.api.formatPath(ctx.apiInstance.resourceName,
-			ctx.apiInstance[ctx.apiMethod].action) + '?' +
+		return apiInstance.api.formatPath(apiInstance.resourceName,
+			apiInstance[ctx.apiMethod].action) + '?' +
 			querystring.stringify(ctx.params);
 	}
 
-	return ctx.apiInstance.api.formatPath(ctx.apiInstance.resourceName,
-			ctx.apiInstance[ctx.apiMethod].action);
+	return apiInstance.api.formatPath(apiInstance.resourceName,
+			apiInstance[ctx.apiMethod].action);
 }
 
 function createMessage(ctx, ruleType, ruleDetails) {
@@ -53,22 +59,6 @@ function aCallTo(apiInstance, apiMethod) {
 	};
 }
 
-function listeningOn(port) {
-	return +port;
-}
-
-function configure(args) {
-	var port = args.filter(function (message) {
-		return typeof message === 'number';
-	})[0];
-	var messages = args.filter(function (message) {
-		return typeof message !== 'number';
-	});
-	port = port || 3000;
-
-	return { messages: messages, port: port };
-}
-
 function killStub(apiStub) {
 	if (apiStub && apiStub.connected === true) {
 		return apiStub.kill('SIGKILL');
@@ -84,12 +74,12 @@ process.once('SIGINT', killAllStubsAndDie);
 process.once('SIGTERM', killAllStubsAndDie);
 
 function stub() {
-	var args = [].slice.call(arguments);
+	var messages = [].slice.call(arguments);
+	var api = this.client;
 
 	return {
 		run: function (cb) {
-			var config = configure(args);
-			var options = { env: { PORT: config.port }, silent: true };
+			var options = { env: { PORT: api.schema.port }, silent: true };
 			var apiStub = cp.fork(path.join(__dirname, '..', 'api-stub',
 				'server.js'), [], options),
 				acknowledgements = 0;
@@ -101,7 +91,7 @@ function stub() {
 
 			apiStub.stderr.pipe(process.stderr);
 
-			if (config.messages.length === 0) {
+			if (messages.length === 0) {
 				return apiStub.on('message', function (message) {
 					if (message.ready === true) {
 						return cb(killIfConnected);
@@ -109,14 +99,14 @@ function stub() {
 				});
 			}
 
-			config.messages.forEach(function (message) {
+			messages.forEach(function (message) {
 				apiStub.send(message);
 			}, apiStub);
 
 			apiStub.on('message', function (message) {
 				if (message.rules) {
 					++acknowledgements;
-					if (acknowledgements === config.messages.length) {
+					if (acknowledgements === messages.length) {
 						cb(killIfConnected);
 					}
 				}
@@ -125,6 +115,37 @@ function stub() {
 	};
 }
 
-module.exports.stub = stub;
+function createClient() {
+	var schema = require('7digital-api/assets/7digital-api-schema.json');
+	var port = 3001;
+
+	schema.host = 'localhost';
+	schema.port = port;
+	schema.version = undefined;
+
+	var api = require('7digital-api').configure({
+		schema: schema
+	});
+
+	api.IS_STUB_CLIENT = true;
+
+	return api;
+}
+
+function checkIsStubClient(client) {
+	if (!client.IS_STUB_CLIENT) {
+		throw new Error('Expected stub client, created with createClient');
+	}
+}
+
+function withClient(client) {
+	checkIsStubClient(client);
+
+	return {
+		stub: stub.bind({ client: client })
+	};
+}
+
+module.exports.withClient = withClient;
 module.exports.aCallTo = aCallTo;
-module.exports.listeningOn = listeningOn;
+module.exports.createClient = createClient;
