@@ -3,18 +3,10 @@ var path = require('path');
 var assert = require('chai').assert;
 var port = Math.floor(Math.random() * 16383 + 49152);
 var fakeResponsePath = path.join(__dirname, 'fake-response.xml');
-var stub = require('../').stub;
+var withClient = require('../').withClient;
 var aCallTo = require('../').aCallTo;
 var listeningOn = require('../').listeningOn;
-var schema = require('7digital-api/assets/7digital-api-schema.json');
-schema.host = 'localhost';
-schema.port = port;
-schema.version = '';
-var api = require('7digital-api').configure({
-	schema: schema
-});
-var basket = new api.Basket();
-var release = new api.Releases();
+var api = require('../').createClient();
 
 describe('stubber', function () {
 	var killer = function () {};
@@ -32,7 +24,7 @@ describe('stubber', function () {
 
 	describe('aCallTo - with no parameters', function  () {
 		it('generates a responds with file rule', function () {
-			var message = aCallTo(basket, 'create')
+			var message = aCallTo(api.Basket, 'create')
 							.respondsWithFile(fakeResponsePath);
 
 			assert.deepEqual(message, {
@@ -47,7 +39,7 @@ describe('stubber', function () {
 		});
 
 		it('generates a responds with error rule', function () {
-			var message = aCallTo(basket, 'create')
+			var message = aCallTo(api.Basket, 'create')
 							.respondsWithErrorCode(90210);
 
 			assert.deepEqual(message, {
@@ -62,7 +54,7 @@ describe('stubber', function () {
 		});
 
 		it('generates a rewrite rule', function () {
-			var message = aCallTo(basket, 'create')
+			var message = aCallTo(api.Basket, 'create')
 							.rewritesTo('http://rewrittenurl.com/');
 
 			assert.deepEqual(message, {
@@ -79,7 +71,7 @@ describe('stubber', function () {
 
 	describe('aCallTo - with parameters', function  () {
 		it('generates a responds with file rule', function () {
-			var message = aCallTo(release, 'getDetails')
+			var message = aCallTo(api.Releases, 'getDetails')
 							.withTheFollowingParameters({ releaseId: 12345 })
 							.respondsWithFile(fakeResponsePath);
 
@@ -95,7 +87,7 @@ describe('stubber', function () {
 		});
 
 		it('generates a responds with error rule', function () {
-			var message = aCallTo(release, 'getDetails')
+			var message = aCallTo(api.Releases, 'getDetails')
 							.withTheFollowingParameters({ releaseId: 12345 })
 							.respondsWithErrorCode(90210);
 
@@ -111,7 +103,7 @@ describe('stubber', function () {
 		});
 
 		it('generates a rewrite rule', function () {
-			var message = aCallTo(release, 'getDetails')
+			var message = aCallTo(api.Releases, 'getDetails')
 							.withTheFollowingParameters({ releaseId: 12345 })
 							.rewritesTo('http://rewrittenurl.com/');
 
@@ -129,16 +121,17 @@ describe('stubber', function () {
 
 	describe('stub', function () {
 		it('stubs endpoints', function (done) {
-			stub(
-				listeningOn(port),
-				aCallTo(basket, 'get')
+			withClient(api).stub(aCallTo(api.Basket, 'get')
 					.withTheFollowingParameters({ basketId: 'blah' })
 					.respondsWithFile(fakeResponsePath),
-				aCallTo(release, 'getDetails')
+				aCallTo(api.Releases, 'getDetails')
 					.withTheFollowingParameters({ releaseId: 12345})
 					.respondsWithErrorCode(90210)
 			).run(function (kill) {
 				killer = kill;
+				var basket = new api.Basket();
+				var release = new api.Releases();
+
 				basket.get({ basketId: 'blah' }, function (err, faked) {
 					isFake(err, faked);
 
