@@ -1,7 +1,6 @@
 var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
-var Request = require('7digital-api/lib/request');
 var api = require('7digital-api');
 var stubs = [];
 
