@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/7digital/7digital-api-stubber",
   "dependencies": {
-    "7digital-api": "~0.10.0",
+    "7digital-api": "~0.11.1",
     "api-stub": "git+http://github.com/7digital/api-stub"
   },
   "devDependencies": {
