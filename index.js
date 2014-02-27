@@ -2,6 +2,7 @@ var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
 var api = require('7digital-api');
+var winston = require('winston');
 var stubs = [];
 
 function getApiUrl(ctx) {
@@ -117,13 +118,19 @@ function stub() {
 function createClient() {
 	var schema = require('7digital-api/assets/7digital-api-schema.json');
 	var port = 3001;
+	var logger = new winston.Logger({
+		transports: [
+			new winston.transports.Console({ level: 'error' })
+		]
+	});
 
 	schema.host = 'localhost';
 	schema.port = port;
 	schema.version = undefined;
 
 	var api = require('7digital-api').configure({
-		schema: schema
+		schema: schema,
+		logger: logger
 	});
 
 	api.IS_STUB_CLIENT = true;
