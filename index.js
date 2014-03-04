@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
@@ -116,7 +117,8 @@ function stub() {
 }
 
 function createClient() {
-	var schema = require('7digital-api/assets/7digital-api-schema.json');
+	var schema = _.clone(
+		require('7digital-api/assets/7digital-api-schema.json'));
 	var port = Math.floor(Math.random() * 1000) + 3001;
 	var logger = new winston.Logger({
 		transports: [
