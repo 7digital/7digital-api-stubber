@@ -23,8 +23,9 @@
   },
   "homepage": "https://github.com/7digital/7digital-api-stubber",
   "dependencies": {
-    "7digital-api": "~0.11.1",
-    "api-stub": "git+http://github.com/7digital/api-stub"
+    "7digital-api": "~0.12.0",
+    "api-stub": "git+http://github.com/7digital/api-stub",
+    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "chai": "~1.8.1",
