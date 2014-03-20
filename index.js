@@ -2,9 +2,9 @@ var _ = require('lodash');
 var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
+var stubs = [];
 var api = require('7digital-api');
 var winston = require('winston');
-var stubs = [];
 
 function getApiUrl(ctx) {
 	var apiInstance = new ctx.apiInstance();
