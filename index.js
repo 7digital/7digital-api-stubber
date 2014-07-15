@@ -4,21 +4,19 @@ var path = require('path');
 var cp = require('child_process');
 var stubs = [];
 var api = require('7digital-api');
+var formatPath = require('7digital-api/lib/helpers').formatPath;
 var winston = require('winston');
 
 function getApiUrl(ctx) {
 	var apiInstance = new ctx.apiInstance();
 
-	var apiClient = apiInstance.api;
-	checkIsStubClient(apiClient);
-
 	if (ctx.params) {
-		return apiInstance.api.formatPath(apiInstance.resourceName,
+		return formatPath(apiInstance.version, apiInstance.resourceName,
 			apiInstance[ctx.apiMethod].action) + '?' +
 			querystring.stringify(ctx.params);
 	}
 
-	return apiInstance.api.formatPath(apiInstance.resourceName,
+	return formatPath(apiInstance.version, apiInstance.resourceName,
 			apiInstance[ctx.apiMethod].action);
 }
 
@@ -131,9 +129,8 @@ function createClient() {
 	schema.version = undefined;
 
 	var api = require('7digital-api').configure({
-		schema: schema,
 		logger: logger
-	});
+	}, schema);
 
 	api.IS_STUB_CLIENT = true;
 
