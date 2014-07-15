@@ -1,9 +1,11 @@
 {
   "name": "7digital-api-stubber",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fluent test helper for stubbing out calls to the 7digital API",
   "main": "index.js",
-  "publishConfig": { "registry": "http://npm-registry.nix.sys.7d:4873/" },
+  "publishConfig": {
+    "registry": "http://npm-registry.nix.sys.7d:4873/"
+  },
   "scripts": {
     "test": "mocha -R spec"
   },
