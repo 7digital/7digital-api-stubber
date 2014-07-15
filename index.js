@@ -3,7 +3,6 @@ var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
 var stubs = [];
-var api = require('7digital-api');
 var formatPath = require('7digital-api/lib/helpers').formatPath;
 var winston = require('winston');
 
