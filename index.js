@@ -10,12 +10,12 @@ function getApiUrl(ctx) {
 	var apiInstance = new ctx.apiInstance();
 
 	if (ctx.params) {
-		return formatPath(apiInstance.version, apiInstance.resourceName,
+		return formatPath(apiInstance.prefix, apiInstance.resourceName,
 			apiInstance[ctx.apiMethod].action) + '?' +
 			querystring.stringify(ctx.params);
 	}
 
-	return formatPath(apiInstance.version, apiInstance.resourceName,
+	return formatPath(apiInstance.prefix, apiInstance.resourceName,
 			apiInstance[ctx.apiMethod].action);
 }
 
@@ -125,7 +125,7 @@ function createClient() {
 
 	schema.host = 'localhost';
 	schema.port = port;
-	schema.version = undefined;
+	schema.prefix = undefined;
 
 	var api = require('7digital-api').configure({
 		logger: logger
