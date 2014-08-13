@@ -3,8 +3,17 @@ var querystring = require('querystring');
 var path = require('path');
 var cp = require('child_process');
 var stubs = [];
-var formatPath = require('7digital-api/lib/helpers').formatPath;
 var winston = require('winston');
+
+function formatPath(prefix, resource, action) {
+	var requestPath = '/' + (prefix ? prefix + '/' : '') + resource;
+
+	if (action !== '') {
+		requestPath += '/' + action;
+	}
+
+	return requestPath;
+}
 
 function getApiUrl(ctx) {
 	var apiInstance = new ctx.apiInstance();

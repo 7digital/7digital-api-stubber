@@ -27,7 +27,6 @@
   "homepage": "https://github.com/7digital/7digital-api-stubber",
   "dependencies": {
     "api-stub": "~0.0.1",
-    "7digital-api": "~0.25.0",
     "lodash": "~2.4.1"
   },
   "devDependencies": {
@@ -36,6 +35,7 @@
     "winston": "0.x"
   },
   "peerDependencies": {
+    "7digital-api": "0.x",
     "winston": "0.x"
   }
 }
