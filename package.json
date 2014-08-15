@@ -30,6 +30,7 @@
     "lodash": "~2.4.1"
   },
   "devDependencies": {
+    "7digital-api": "0.x",
     "chai": "~1.8.1",
     "mocha": "~1.17.0",
     "winston": "0.x"
