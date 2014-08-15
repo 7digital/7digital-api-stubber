@@ -88,9 +88,9 @@ function stub() {
 		run: function (cb) {
 			process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 			var options = { env: { PORT: api.schema.port }, silent: true };
-			var apiStub = cp.fork(path.join(__dirname, '..', 'api-stub',
-				'server.js'), [], options),
-				acknowledgements = 0;
+			var apiStub = cp.fork(path.join(__dirname, 'node_modules',
+				'api-stub', 'server.js'), [], options);
+			var acknowledgements = 0;
 			stubs.push(apiStub);
 
 			function killIfConnected() {
