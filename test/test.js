@@ -121,12 +121,11 @@ describe('stubber', function () {
 
 	describe('stub', function () {
 		it('stubs endpoints', function (done) {
-			withClient(api).stub(
-				aCallTo(api.Basket, 'get')
+			withClient(api).stub(aCallTo(api.Basket, 'get')
 					.withTheFollowingParameters({ basketId: 'blah' })
 					.respondsWithFile(fakeResponsePath),
 				aCallTo(api.Releases, 'getDetails')
-					.withTheFollowingParameters({ releaseId: 12345 })
+					.withTheFollowingParameters({ releaseId: 12345})
 					.respondsWithErrorCode(90210)
 			).run(function (kill) {
 				killer = kill;
