@@ -27,7 +27,11 @@
   "homepage": "https://github.com/7digital/7digital-api-stubber",
   "dependencies": {
     "api-stub": "~0.0.1",
-    "lodash": "~2.4.1"
+    "body-parser": "~1.8.2",
+    "express": "~3.16.5",
+    "httpolyglot": "~0.1.0",
+    "lodash": "~2.4.1",
+    "request": "~2.44.0"
   },
   "devDependencies": {
     "7digital-api": "0.x",
