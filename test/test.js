@@ -23,7 +23,7 @@ describe('stubber', function () {
 	});
 
 	describe('aCallTo - with no parameters', function  () {
-		it('generates a responds with file rule', function () {
+		it('generates a response with file rule', function () {
 			var message = aCallTo(api.Basket, 'create')
 							.respondsWithFile(fakeResponsePath);
 
@@ -38,7 +38,7 @@ describe('stubber', function () {
 			});
 		});
 
-		it('generates a responds with error rule', function () {
+		it('generates a response with error rule', function () {
 			var message = aCallTo(api.Basket, 'create')
 							.respondsWithErrorCode(90210);
 
@@ -70,7 +70,7 @@ describe('stubber', function () {
 	});
 
 	describe('aCallTo - with parameters', function  () {
-		it('generates a responds with file rule', function () {
+		it('generates a response with file rule', function () {
 			var message = aCallTo(api.Releases, 'getDetails')
 							.withTheFollowingParameters({ releaseId: 12345 })
 							.respondsWithFile(fakeResponsePath);
@@ -86,7 +86,7 @@ describe('stubber', function () {
 			});
 		});
 
-		it('generates a responds with error rule', function () {
+		it('generates a response with error rule', function () {
 			var message = aCallTo(api.Releases, 'getDetails')
 							.withTheFollowingParameters({ releaseId: 12345 })
 							.respondsWithErrorCode(90210);
@@ -117,10 +117,45 @@ describe('stubber', function () {
 				}
 			});
 		});
+
+		it('generates a form data file rule', function () {
+			var formData = { emailAddress: 'some-email' };
+			var message = aCallTo(api.User, 'authenticate')
+							.withFormData(formData)
+							.respondsWithFile(fakeResponsePath);
+
+			assert.deepEqual(message, {
+				rules: {
+					urls: {
+						'/user/authenticate': {
+							formData: formData,
+							serveFile: fakeResponsePath
+						}
+					}
+				}
+			});
+		});
+
+		it('generates a url slug file rule', function () {
+			var slugs = { id: 'some-id' };
+			var message = aCallTo(api.Users, 'update')
+							.withSlugs(slugs)
+							.respondsWithFile(fakeResponsePath);
+
+			assert.deepEqual(message, {
+				rules: {
+					urls: {
+						'/users/some-id/update': {
+							serveFile: fakeResponsePath
+						}
+					}
+				}
+			});
+		});
 	});
 
 	describe('stub', function () {
-		it('stubs endpoints', function (done) {
+		it('stubs querystring endpoints', function (done) {
 			withClient(api).stub(aCallTo(api.Basket, 'get')
 					.withTheFollowingParameters({ basketId: 'blah' })
 					.respondsWithFile(fakeResponsePath),
@@ -139,7 +174,24 @@ describe('stubber', function () {
 						assert(err, 'expected an error');
 						assert.equal(err.code, 90210,
 							'expected error code to match stubbed value');
-						kill();
+						done();
+					});
+				});
+			});
+		});
+
+		it('stubs form data endpoints', function (done) {
+			withClient(api).stub(aCallTo(api.User, 'authenticate')
+					.withFormData({ emailAddress: 'email' })
+					.respondsWithFile(fakeResponsePath)
+			).run(function (kill) {
+				killer = kill;
+
+				api.User().authenticate({ emailAddress: 'email' }, function (err, faked) {
+					isFake(err, faked);
+
+					api.User().authenticate({}, function (err, faked) {
+						assert(err, 'expected an error');
 						done();
 					});
 				});

@@ -35,7 +35,11 @@ function createMessage(ctx, ruleType, ruleDetails) {
 
 	var url = getApiUrl(ctx);
 	var message = { rules: { urls: {} } };
-	var rule= {};
+	var rule = {};
+	if (ctx.formData) { rule.formData = ctx.formData; }
+	_.forEach(ctx.urlSlugs, function (value, placeholder) {
+		url = url.replace(':' + placeholder, value);
+	});
 	rule[ruleType] = ruleDetails;
 	message.rules.urls[url] = rule;
 
@@ -50,9 +54,19 @@ function aCallTo(apiInstance, apiMethod) {
 
 	return {
 
-		// Helper to build up the url
+		// Helper to build up the url querystring
 		withTheFollowingParameters: function withTheFollowingParameters(p) {
 			ctx.params = p;
+			return this;
+		},
+		// Helper to build up the url form data
+		withFormData: function withFormData(data) {
+			ctx.formData = data;
+			return this;
+		},
+		// Helper to build up the url slugs
+		withSlugs: function withSlugs(slugs) {
+			ctx.urlSlugs = slugs;
 			return this;
 		},
 		// Terminator which returns the message to send to the stub
