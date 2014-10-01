@@ -1,6 +1,6 @@
 {
   "name": "7digital-api-stubber",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fluent test helper for stubbing out calls to the 7digital API",
   "main": "index.js",
   "publishConfig": {
