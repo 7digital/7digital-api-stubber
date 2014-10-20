@@ -140,7 +140,8 @@ function stub() {
 	};
 }
 
-function createClient() {
+function createClient(opts) {
+	opts = opts || {};
 	var schema = _.clone(
 		require('7digital-api/assets/7digital-api-schema.json'));
 	var logger = new winston.Logger({
@@ -150,7 +151,7 @@ function createClient() {
 	});
 
 	schema.host = 'localhost';
-	schema.port = 9877;
+	schema.port = opts.port || 9877;
 	schema.prefix = undefined;
 
 	var api = require('7digital-api').configure({
