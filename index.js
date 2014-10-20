@@ -6,6 +6,7 @@ var path = require('path');
 var cp = require('child_process');
 var stubs = [];
 var winston = require('winston');
+var portfinder = require('portfinder');
 
 function formatPath(prefix, resource, action) {
 	var requestPath = '/' + (prefix ? prefix + '/' : '') + resource;
@@ -140,8 +141,7 @@ function stub() {
 	};
 }
 
-function createClient(opts) {
-	opts = opts || {};
+function createClient(cb) {
 	var schema = _.clone(
 		require('7digital-api/assets/7digital-api-schema.json'));
 	var logger = new winston.Logger({
@@ -150,17 +150,21 @@ function createClient(opts) {
 		]
 	});
 
-	schema.host = 'localhost';
-	schema.port = opts.port || 9877;
-	schema.prefix = undefined;
+	portfinder.getPort(function (err, port) {
+		if (err) { return cb(err); }
 
-	var api = require('7digital-api').configure({
-		logger: logger
-	}, schema);
+		schema.host = 'localhost';
+		schema.port = port;
+		schema.prefix = undefined;
 
-	api.IS_STUB_CLIENT = true;
+		var api = require('7digital-api').configure({
+			logger: logger
+		}, schema);
 
-	return api;
+		api.IS_STUB_CLIENT = true;
+
+		return cb(null, api);
+	});
 }
 
 function checkIsStubClient(client) {

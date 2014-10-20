@@ -11,32 +11,36 @@ tests.
 var stub = require('7digital-api-stubber').stub;
 var aCallTo = require('7digital-api-stubber').aCallTo;
 var listeningOn = require('7digital-api-stubber').listeningOn;
+var createStubClient = require('7digital-api-stubber').createClient;
 var schema = require('7digital-api/assets/7digital-api-schema.json');
-schema.host = 'localhost';
-schema.port = port;
-schema.version = '';
-var api = require('7digital-api').configure({
-	schema: schema
-});
-var basket = new api.Basket();
-var release = new api.Releases();
 
 describe('Using the stubber', function () {
+	var api;
+
+	before(function (done) {
+		createStubClient(function (err, client) {
+			if (err) { return done(err); }
+			api = client;
+			done();
+		});
+	});
+
 	it('stubs endpoints', function (done) {
-		stub(
-			listeningOn(schema.port),
-			aCallTo(basket, 'get')
+		withClient(api).stub(
+			aCallTo(api.Basket, 'get')
 				.withTheFollowingParameters({ basketId: 'blah' })
 				.respondsWithFile('/path/to/response.xml'),
-			aCallTo(release, 'getDetails')
+			aCallTo(api.Release, 'getDetails')
 				.withTheFollowingParameters({ releaseId: 12345})
 				.respondsWithErrorCode(90210)
 		).run(function (kill) {
 			// Do stuff with a stub setup for you - E.g.
-			basket.get({ basketId: 'blah' }, function (err, faked) {
+			api.Basket().get({ basketId: 'blah' }, function (err, faked) {
 				assert(!err);
 				
-				release.getDetails({ releaseId: 12345 }, function (err, faked) {
+				api.Release().getDetails({ releaseId: 12345 },
+					function (err, faked) {
+
 					assert(err, 'expected an error');
 					assert.equal(err.code, 90210,
 						'expected error code to match stubbed value');
