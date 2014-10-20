@@ -143,7 +143,6 @@ function stub() {
 function createClient() {
 	var schema = _.clone(
 		require('7digital-api/assets/7digital-api-schema.json'));
-	var port = Math.floor(Math.random() * 10000) + 3001;
 	var logger = new winston.Logger({
 		transports: [
 			new winston.transports.Console({ level: 'error' })
@@ -151,7 +150,7 @@ function createClient() {
 	});
 
 	schema.host = 'localhost';
-	schema.port = port;
+	schema.port = 9877;
 	schema.prefix = undefined;
 
 	var api = require('7digital-api').configure({
