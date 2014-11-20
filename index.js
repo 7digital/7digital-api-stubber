@@ -153,7 +153,7 @@ function createClient(cb) {
 	portfinder.getPort(function (err, port) {
 		if (err) { return cb(err); }
 
-		schema.host = 'localhost';
+		schema.host = schema.sslHost = 'localhost';
 		schema.port = port;
 		schema.prefix = undefined;
 
