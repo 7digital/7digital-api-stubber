@@ -50,7 +50,7 @@ function createMessage(ctx, ruleType, ruleDetails) {
 function aCallTo(apiInstance, apiMethod) {
 	var ctx = {
 		apiInstance: apiInstance,
-		apiMethod: apiMethod,
+		apiMethod: apiMethod
 	};
 
 	return {
@@ -104,7 +104,7 @@ function stub() {
 
 	return {
 		run: function (cb) {
-			process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+			process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 			var options = { env: { PORT: api.schema.port }, silent: true };
 			var apiStub = cp.fork(path.join(__dirname, 'lib', 'server.js'),
 				[], options);
