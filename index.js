@@ -157,6 +157,9 @@ function createClient(cb) {
 		schema.port = port;
 		schema.prefix = undefined;
 
+		//Actually use the port we specified...
+		delete process.env._7D_API_CLIENT_PORT;
+
 		var api = require('7digital-api').configure({
 			logger: logger
 		}, schema);
