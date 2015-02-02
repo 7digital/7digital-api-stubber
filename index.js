@@ -8,6 +8,13 @@ var stubs = [];
 var winston = require('winston');
 var portfinder = require('portfinder');
 
+function stringifyFormData(formData) {
+	var transformed = _.transform(formData, function (acc, v, k) {
+		acc[k] = v.toString();
+	});
+	return transformed;
+}
+
 function formatPath(prefix, resource, action) {
 	var requestPath = '/' + (prefix ? prefix + '/' : '') + resource;
 
@@ -37,7 +44,9 @@ function createMessage(ctx, ruleType, ruleDetails) {
 	var url = getApiUrl(ctx);
 	var message = { rules: { urls: {} } };
 	var rule = {};
-	if (ctx.formData) { rule.formData = ctx.formData; }
+	if (ctx.formData) {
+		rule.formData = stringifyFormData(ctx.formData);
+	}
 	_.forEach(ctx.urlSlugs, function (value, placeholder) {
 		url = url.replace(':' + placeholder, value);
 	});
