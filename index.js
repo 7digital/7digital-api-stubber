@@ -83,6 +83,9 @@ function aCallTo(apiInstance, apiMethod) {
 		respondsWithFile: function respondsWithFile(path) {
 			return createMessage(ctx, 'serveFile', path);
 		},
+		respondsWithHttpErrorCode: function respondsWithErrorCode(statusCode) {
+			return createMessage(ctx, 'returnHttpError', statusCode);
+		},
 		respondsWithErrorCode: function respondsWithErrorCode(statusCode) {
 			return createMessage(ctx, 'returnError', statusCode);
 		},

@@ -1,4 +1,5 @@
 'use strict';
+var ApiHttpError = require('7digital-api/lib/errors').ApiHttpError;
 var path = require('path');
 var assert = require('chai').assert;
 var port = Math.floor(Math.random() * 16383 + 49152);
@@ -181,6 +182,21 @@ describe('stubber', function () {
 					});
 				});
 			});
+		});
+
+		it('responds with HTTP error codes', function(done) {
+			withClient(api).stub(aCallTo(api.Basket, 'get')
+				.withTheFollowingParameters({ basketId: 'basketId' })
+				.respondsWithHttpErrorCode(500))
+				.run(function (kill) {
+					killer = kill;
+
+					new api.Basket().get({basketId: 'basketId'}, function (err, basket) {
+						assert.instanceOf(err, ApiHttpError);
+						assert.equal(err.statusCode, 500);
+						done();
+					});
+				});
 		});
 
 		it('stubs form data endpoints', function (done) {
