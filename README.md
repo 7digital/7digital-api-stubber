@@ -7,6 +7,14 @@ A helper package which spins up an API stub as a child process and allows you
 to fluently configure the behaviour of the stub from with in your integration
 tests.
 
+You can stub the responses in the following ways:
+
+`respondsWithFile(filePath)` *will respond with the contents of the supplied file path*
+
+`respondsWithErrorCode(errorCode)` *will respond with a valid 7digital api response with a 7digital error code specified*
+
+`respondsWithHttpErrorCode(statusCode)` *will respond with an empty response with the specified HttpStatusCode*
+
 ```javascript
 var stub = require('7digital-api-stubber').stub;
 var aCallTo = require('7digital-api-stubber').aCallTo;
