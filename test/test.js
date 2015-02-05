@@ -6,7 +6,10 @@ var fakeResponsePath = path.join(__dirname, 'fake-response.xml');
 var withClient = require('../').withClient;
 var aCallTo = require('../').aCallTo;
 var listeningOn = require('../').listeningOn;
-var api = require('../').createClient();
+var api;
+require('../').createClient(function(err, client) {
+	api = client;
+});
 
 describe('stubber', function () {
 	var killer = function () {};
