@@ -153,9 +153,10 @@ function stub() {
 	};
 }
 
-function createClient(cb) {
+function createClient(opts, cb) {
+	var apiClientDir = path.dirname(opts.apiClientPath);
 	var schema = _.clone(
-		require('7digital-api/assets/7digital-api-schema.json'));
+		require(apiClientDir + '/assets/7digital-api-schema.json'));
 	var logger = new winston.Logger({
 		transports: [
 			new winston.transports.Console({ level: 'error' })
@@ -174,7 +175,7 @@ function createClient(cb) {
 		delete process.env._7D_API_CLIENT_HOST;
 		delete process.env._7D_API_CLIENT_SSL_HOST;
 
-		var api = require('7digital-api').configure({
+		var api = require(apiClientDir).configure({
 			logger: logger
 		}, schema);
 
