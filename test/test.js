@@ -8,9 +8,7 @@ var withClient = require('../').withClient;
 var aCallTo = require('../').aCallTo;
 var listeningOn = require('../').listeningOn;
 var api;
-require('../').createClient({
-	apiClientPath: require.resolve('7digital-api')
-}, function(err, client) {
+require('../').createClient({}, function(err, client) {
 	api = client;
 });
 
