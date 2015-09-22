@@ -154,7 +154,7 @@ function stub() {
 }
 
 function createClient(opts, cb) {
-	var apiClient = require('7digital-api');
+	var apiClient = opts.apiClient;
 	var schema = _.clone(apiClient.schema);
 	var logger = new winston.Logger({
 		transports: [
